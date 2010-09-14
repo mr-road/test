@@ -51,6 +51,7 @@ class Net::HTTPRequest
   # the body. this is broken, and should be fixed.
   def set_oauth_body
     self.set_form_data(@oauth_helper.parameters_with_oauth)
+
     params_with_sig = @oauth_helper.parameters.merge(:oauth_signature => @oauth_helper.signature)
     self.set_form_data(params_with_sig)
   end
@@ -66,7 +67,6 @@ class Net::HTTPRequest
     end
 
     @path = uri.to_s
-
-    @path << "&oauth_signature=#{@oauth_helper.signature}"
+    @path << "&oauth_signature=#{URI.escape(@oauth_helper.signature, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
   end
 end
